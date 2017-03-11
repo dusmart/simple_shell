@@ -61,7 +61,7 @@ int setup(char inputBuffer[], char *args[], int *background){
     else return -1;
 }
 
-void excute(char *args[], const int background){
+void execute(char *args[], const int background){
     // fork a child process to do the command
     pid_t pid = fork();
     if(pid < 0){
@@ -95,7 +95,7 @@ void handle_SIGINT(int sig){
         printf("%s", history[i%10]);
         fflush(stdout);
     }
-    //excute history command
+    //execute history command
     printf(COLOR_LIGHT_CYAN"HISTORY >> "NONE);
     fflush(stdout);
     if((length = read(STDIN_FILENO, inputBuffer, MAX_LINE)) == 0) exit(0);
@@ -109,7 +109,7 @@ void handle_SIGINT(int sig){
         printf("%s", history[(history_index-1)%10]);
         strcpy(inputBuffer, history[(history_index-1)%10]);
         setup(inputBuffer, args, &background);
-        excute(args, background);
+        execute(args, background);
     }
     else if(inputBuffer[1] == ' '){
         for(i=history_index-1;i>=0&&i>=history_index-10;--i){
@@ -118,7 +118,7 @@ void handle_SIGINT(int sig){
         printf("%s", history[i%10]);
         strcpy(inputBuffer, history[i%10]);
         setup(inputBuffer, args, &background);
-        excute(args, background);
+        execute(args, background);
     }
     fflush(stdout);
 }
@@ -142,6 +142,6 @@ int main(){
         inputBuffer[length] = '\0';
         // parse the args in command and store right command to history
         setup(inputBuffer, args, &background);
-        excute(args, background);
+        execute(args, background);
     }
 }
