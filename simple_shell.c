@@ -144,4 +144,5 @@ int main(){
         setup(inputBuffer, args, &background);
         execute(args, background);
     }
+    return 0;
 }
