@@ -4,6 +4,7 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
 
 #define MAX_LINE 80
 #define TRUE 1
@@ -18,6 +19,8 @@
 
 char history[HISTORY_NUM][MAX_LINE];
 int history_index = 0;
+char buf[1];
+int fds[2];
 
 int setup(char inputBuffer[], char *args[], int *background){
     int i, start = -1, count = 0, length = strlen(inputBuffer);
@@ -73,6 +76,8 @@ void execute(char *args[], const int background){
         // child process
         if(execvp(args[0], args) == -1){
             printf(COLOR_PURPLE"Warning: There is no such instruction.\n"NONE);
+            memcpy(buf, "N", 1);
+            write(fds[1], buf, 1);
         }
         exit(0);
     }
@@ -81,6 +86,8 @@ void execute(char *args[], const int background){
         if(background == FALSE){
             waitpid(pid, NULL, 0);
         }
+        int status = read(fds[0], buf, 1);
+        if(buf[0]=='N' && status>0) history_index--;
     }
 }
 
@@ -106,6 +113,7 @@ void handle_SIGINT(int sig){
         if((length = read(STDIN_FILENO, inputBuffer, MAX_LINE)) == 0) exit(0);
     }
     if(length == 2){
+        printf(COLOE_LIGHT_BLUE"old command is "NONE);
         printf("%s", history[(history_index-1)%10]);
         strcpy(inputBuffer, history[(history_index-1)%10]);
         setup(inputBuffer, args, &background);
@@ -115,6 +123,7 @@ void handle_SIGINT(int sig){
         for(i=history_index-1;i>=0&&i>=history_index-10;--i){
             if(history[i%10][0] == inputBuffer[2]) break;
         }
+        printf(COLOE_LIGHT_BLUE"old command is "NONE);
         printf("%s", history[i%10]);
         strcpy(inputBuffer, history[i%10]);
         setup(inputBuffer, args, &background);
@@ -132,6 +141,9 @@ int main(){
     struct sigaction handler;
     handler.sa_handler = handle_SIGINT;
     sigaction(SIGINT, &handler, NULL);
+    pipe(fds);
+    fcntl( fds[1], F_SETFL, fcntl(fds[1], F_GETFL) | O_NONBLOCK);
+    fcntl( fds[0], F_SETFL, fcntl(fds[0], F_GETFL) | O_NONBLOCK);
 
     // the main loop
     while(TRUE){
