@@ -16,7 +16,7 @@ tags:
 
 1. execute normal executable commands in **COMMAND** mode
 2. execute command in background if a command end with ' &'
-3. output most recent 10 commands and enter **HISTORY** mode when user enters \<Control\>\<C\>
+3. output most recent 10 commands and enter **HISTORY** mode when user enters \<Control\>\<C\>, wrong command will not be in history
 4. execute history command in **HISTORY** mode when user enter 'r x', 'x' is the first letter of that command
 
 ## Outline
@@ -198,4 +198,4 @@ int setup(char inputBuffer[], char *args[], int *background){
 
 [https://github.com/dusmart/simple_shell](https://github.com/dusmart/simple_shell)
 
-![img](/assets/img/2017-03-11-1.png)
+![img](https://github.com/dusmart.github.io/assets/img/2017-03-11-1.png)
