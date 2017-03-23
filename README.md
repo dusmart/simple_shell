@@ -17,7 +17,7 @@ tags:
 1. execute normal executable commands in **COMMAND** mode
 2. execute command in background if a command end with ' &'
 3. output most recent 10 commands and enter **HISTORY** mode when user enters \<Control\>\<C\>, wrong command will not be in history
-4. execute history command in **HISTORY** mode when user enter 'r x', 'x' is the first letter of that command
+4. execute history command in **HISTORY** mode when user enter 'r x' or 'r', 'x' is the first letter of that command,'r' stand for executing the most recent command
 
 ## Outline
 
