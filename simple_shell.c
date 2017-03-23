@@ -86,6 +86,7 @@ void execute(char *args[], const int background){
         if(background == FALSE){
             waitpid(pid, NULL, 0);
         }
+        else sleep(0.2);
         int status = read(fds[0], buf, 1);
         if(buf[0]=='N' && status>0) history_index--;
     }
