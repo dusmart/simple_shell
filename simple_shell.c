@@ -17,7 +17,7 @@
 #define COLOR_PURPLE        "\033[0;35m"
 
 
-char history[HISTORY_NUM][MAX_LINE];
+char history[HISTORY_NUM + 1][MAX_LINE];
 int history_index = 0;
 char buf[1];
 int fds[2];
@@ -58,7 +58,7 @@ int setup(char inputBuffer[], char *args[], int *background){
     }
     args[count] = NULL;
     if(count != 0){
-        memcpy(history[(history_index++)%10], tmp, MAX_LINE);
+        memcpy(history[(history_index++)%(HISTORY_NUM + 1)], tmp, MAX_LINE);
         return 0;
     }
     else return -1;
@@ -96,11 +96,11 @@ void handle_SIGINT(int sig){
     char inputBuffer[MAX_LINE];
     char *args[MAX_LINE/2 + 1];
     int length, background;
-    int i = (history_index<10)?0:(history_index-10);
+    int i = (history_index<HISTORY_NUM)?0:(history_index-HISTORY_NUM);
     printf("\n");
     for(;i<history_index;++i){
         printf("%d: ", i+1);
-        printf("%s", history[i%10]);
+        printf("%s", history[i%(HISTORY_NUM + 1)]);
         fflush(stdout);
     }
     //execute history command
@@ -115,18 +115,18 @@ void handle_SIGINT(int sig){
     }
     if(length == 2){
         printf(COLOE_LIGHT_BLUE"old command is "NONE);
-        printf("%s", history[(history_index-1)%10]);
-        strcpy(inputBuffer, history[(history_index-1)%10]);
+        printf("%s", history[(history_index-1)%(HISTORY_NUM + 1)]);
+        strcpy(inputBuffer, history[(history_index-1)%(HISTORY_NUM + 1)]);
         setup(inputBuffer, args, &background);
         execute(args, background);
     }
     else if(inputBuffer[1] == ' '){
-        for(i=history_index-1;i>=0&&i>=history_index-10;--i){
-            if(history[i%10][0] == inputBuffer[2]) break;
+        for(i=history_index-1;i>=0&&i>=history_index-HISTORY_NUM;--i){
+            if(history[i%(HISTORY_NUM + 1)][0] == inputBuffer[2]) break;
         }
         printf(COLOE_LIGHT_BLUE"old command is "NONE);
-        printf("%s", history[i%10]);
-        strcpy(inputBuffer, history[i%10]);
+        printf("%s", history[i%(HISTORY_NUM + 1)]);
+        strcpy(inputBuffer, history[i%(HISTORY_NUM + 1)]);
         setup(inputBuffer, args, &background);
         execute(args, background);
     }
@@ -142,6 +142,7 @@ int main(){
     struct sigaction handler;
     handler.sa_handler = handle_SIGINT;
     sigaction(SIGINT, &handler, NULL);
+    // set up non block pipe for communication between child and parent
     pipe(fds);
     fcntl( fds[1], F_SETFL, fcntl(fds[1], F_GETFL) | O_NONBLOCK);
     fcntl( fds[0], F_SETFL, fcntl(fds[0], F_GETFL) | O_NONBLOCK);
