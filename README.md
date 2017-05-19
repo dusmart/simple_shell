@@ -74,4 +74,4 @@ I slightly change it to support history feature. That is to say, when a command 
 
 [https://github.com/dusmart/simple_shell](https://github.com/dusmart/simple_shell)
 
-![img](https://dusmart.github.io/assets/img/2017-03-11-1.png)
+![img](https://github.com/dusmart/dusmart.github.io/raw/master/assets/img/2017-03-11-1.png)
